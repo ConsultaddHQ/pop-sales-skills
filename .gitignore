@@ -1,0 +1,19 @@
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node (if anyone adds tooling later)
+node_modules/
+
+# Local env / secrets
+.env
+.env.local
+
+# Never commit local user data — customer profiles stay private
+customer-intelligence/
