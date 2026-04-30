@@ -4,19 +4,26 @@ Print this. Pin it next to your monitor.
 
 ---
 
-## The 4 commands you actually use
+## The 5 commands you actually use
 
 ```
 claude                                                  # open Claude Code
 
-/customer-discovery "Name" "Company" "Location"        # pre-call research
+/customer-discovery "Name" "Company" "Location"        # pre-call research (NEW prospects)
 
-/meeting-debrief                                        # post-call recap + email
+/meeting-prep "Company"                                # pre-call prep (ONGOING deals, meeting #2+)
+
+/meeting-debrief                                        # post-call recap + follow-up email
 
 /pop-one-pager "Company"                                # generate proposal
 ```
 
 That's it. Everything else stacks on top of these.
+
+**When to use which:**
+- New prospect, first call → `/customer-discovery`
+- Same prospect, second call onward → `/meeting-prep` (reads full history)
+- Right after any call → `/meeting-debrief`
 
 ---
 

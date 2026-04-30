@@ -35,13 +35,21 @@ The rhythm of an SDR or AE day. Print this or keep it in a tab.
 5. Read the **Do NOT Pitch** section. Burn it into your brain.
 6. Open the **Sources** section in another tab so you can quote specifics if it comes up naturally.
 
-**For ongoing deals (multiple prior meetings):**
+**For ongoing deals (meeting #2 and beyond), run:**
 
-Read the latest entry in `customer-profile.md` under "Activity Log." That tells you:
-- What happened last call
-- What we committed to do (have we done it?)
-- What they committed to do (have they done it?)
-- What's still unresolved
+```
+/meeting-prep "Company Name"
+```
+
+The skill reads the full customer profile + all prior debriefs + Granola transcripts and produces a prep brief with:
+- ⚠ Open commitments (especially OVERDUE ones from us — biggest meeting-killer)
+- The move for THIS meeting (advance / hold / save / decide / re-engage)
+- Deal timeline
+- Predicted questions grounded in prior moments
+- Likely objections + working responses
+- A 30-second cold-read for context
+
+Read in 2-3 minutes, walk into the call, do the move.
 
 ---
 
@@ -108,9 +116,9 @@ The skill outputs are silent partners. You're the one talking. A few things to k
 | You want to... | Run this |
 |---|---|
 | Research a new prospect before a call | `/customer-discovery "Name" "Company" "Location"` |
+| Prepare for an ongoing deal (meeting #2+) | `/meeting-prep "Company"` |
 | Update profile and draft email after a call | `/meeting-debrief` |
-| Prepare for an ongoing deal (multi-meeting) | `/meeting-prep "Company"` *(coming soon)* |
-| See full state of a prospect | `/deal-status "Company"` *(coming soon)* |
+| See full state of a prospect across meetings | `/deal-status "Company"` *(coming soon)* |
 | Generate a one-pager for a prospect | `/pop-one-pager "Company"` |
 | Get coached during a live call | `/live-sales-coach` *(in Claude Cowork)* |
 

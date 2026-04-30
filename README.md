@@ -35,7 +35,7 @@ For AEs who want batch operations, MCP integrations, and CLI workflows. Not reco
 curl -fsSL https://raw.githubusercontent.com/ConsultaddHQ/pop-sales-skills/main/scripts/install.sh | bash
 ```
 
-**Daily use:** `/customer-discovery "Name" "Company"`, `/meeting-debrief`, etc.
+**Daily use:** `/customer-discovery`, `/meeting-prep`, `/meeting-debrief`, etc.
 
 ---
 
@@ -75,6 +75,10 @@ After:
 │       ├── case-regina-thermal-ledger.md  Non-technical founder pre-product
 │       ├── case-elefit-store.md         Hiring-inflection decision gate
 │       └── customer-profile-template.md
+├── meeting-prep/                       The prep skill for ongoing deals + reference
+│   ├── SKILL.md
+│   └── references/
+│       └── case-mister-mac-prep.md     5-meeting deal that pivoted to partnership
 ├── meeting-debrief/                     The debrief skill + email examples
 │   ├── SKILL.md
 │   └── references/
