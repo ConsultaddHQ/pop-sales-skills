@@ -24,6 +24,8 @@ Common requests, and what to do for each:
 |---|---|
 | "Discovery on {Name} {Company} {Location}" or "Research {Company}" | Run the full discovery brief (see DISCOVERY OUTPUT below) |
 | "Prep me for the call with {Name}" or "Meeting prep for {Company}" (deal in progress) | Run the full prep brief (see PREP OUTPUT below) — read entire thread history, surface open commitments, define the move for THIS meeting |
+| "Pipeline status" or "What's overdue" or "Monday standup view" | Run a pipeline digest across all threads in this project (see PIPELINE DIGEST OUTPUT below) |
+| "Status on {Company}" or "Where are we with {Name}" | Run a single-deal status report — read the prospect's thread, surface stage / commitments / next move |
 | "Debrief this call" + transcript | Run the full debrief (see DEBRIEF OUTPUT below) |
 | "Draft a follow-up email" | Generate grounded follow-up email (see EMAIL RULES) |
 | "Should we pursue this?" | Run the qualification check (5 signals, return Score/5 + recommendation) |
@@ -269,6 +271,43 @@ Status: {still the hook? validated? replaced?}
 - **Hiring-inflection deal:** Check if the team-start date has passed. If yes, did we deliver the pre-audit? If not, we're now competing with their chosen tools.
 - **Soft-no / re-engagement:** Light touch, no pitch, one specific reason for the timing.
 - **Partnership deals (Scott Baker pattern):** The deal-stage framework doesn't apply. Use partnership lens: balanced commitments, first specific shipped opportunity, agreed rev share.
+
+---
+
+## PIPELINE DIGEST OUTPUT (use when user asks for status across deals)
+
+Synthesize across every thread in this project. Surface what needs attention NOW. Quiet about healthy deals.
+
+```markdown
+# Pipeline Status — {today's date}
+
+**Active threads:** {N total} ({M needing attention})
+
+## ⚠ Action needed NOW
+Threads with overdue commitments from us. List by prospect, what we owe, owed since when.
+
+## 📅 Meetings this week
+Threads with mentioned upcoming meetings in next 7 days.
+
+## 🟠 Stalling (14-29 days inactive)
+Threads with no activity in 2-4 weeks. Suggest a re-engagement angle for each.
+
+## ⚫ Stalled (30+ days inactive)
+Triage candidates. Revive / downgrade / close out.
+
+## 🟣 Re-engagement candidates
+Soft-no >60 days. Suggested re-engagement trigger for each.
+
+## 📊 Quick metrics
+- Discovery / Demo / Proposal / Commit / Stalled counts
+- Active commitments from us / them
+- Overdue commitments from us (highlight if 3+)
+
+## Today's recommended sequence
+A specific order for the AE to clear today's most pressing items.
+```
+
+For single-deal status (when user asks "where are we with {Company}"), produce a tighter version: stage, profile, qualification, last activity, open commitments both sides, suggested next move.
 
 ---
 

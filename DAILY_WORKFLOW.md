@@ -8,9 +8,20 @@ The rhythm of an SDR or AE day. Print this or keep it in a tab.
 
 **Before your first call of the day:**
 
-1. Open your calendar. Identify every prospect you'll talk to today.
-2. Open Claude Code. Type `claude` in Terminal.
-3. For each prospect:
+1. Open Claude Code. Type `claude` in Terminal.
+2. **Run the pipeline digest first:**
+
+```
+/deal-status
+```
+
+This shows you what needs attention TODAY across the whole pipeline. Overdue commitments at the top (the trust-killers), meetings this week, stalling deals. The bottom of the digest gives you a recommended sequence for the morning.
+
+3. Address overdue commitments before any new outreach. If your digest shows 3+ overdue items, that's a delivery cadence problem — block 90 minutes to clear them all in one session.
+
+4. Open your calendar. Identify every prospect you'll talk to today.
+
+5. For each prospect:
 
 ```
 /customer-discovery "Contact Name" "Company Name" "City State"
@@ -115,10 +126,11 @@ The skill outputs are silent partners. You're the one talking. A few things to k
 
 | You want to... | Run this |
 |---|---|
+| Pipeline digest — what needs attention now | `/deal-status` |
+| State of one specific deal | `/deal-status "Company"` |
 | Research a new prospect before a call | `/customer-discovery "Name" "Company" "Location"` |
 | Prepare for an ongoing deal (meeting #2+) | `/meeting-prep "Company"` |
 | Update profile and draft email after a call | `/meeting-debrief` |
-| See full state of a prospect across meetings | `/deal-status "Company"` *(coming soon)* |
 | Generate a one-pager for a prospect | `/pop-one-pager "Company"` |
 | Get coached during a live call | `/live-sales-coach` *(in Claude Cowork)* |
 

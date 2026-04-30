@@ -4,10 +4,13 @@ Print this. Pin it next to your monitor.
 
 ---
 
-## The 5 commands you actually use
+## The 6 commands you actually use
 
 ```
 claude                                                  # open Claude Code
+
+/deal-status                                            # pipeline digest (Mon morning)
+/deal-status "Company"                                  # single-deal status
 
 /customer-discovery "Name" "Company" "Location"        # pre-call research (NEW prospects)
 
@@ -21,9 +24,11 @@ claude                                                  # open Claude Code
 That's it. Everything else stacks on top of these.
 
 **When to use which:**
+- Monday morning, what should I work on → `/deal-status`
 - New prospect, first call → `/customer-discovery`
 - Same prospect, second call onward → `/meeting-prep` (reads full history)
 - Right after any call → `/meeting-debrief`
+- Need to refresh on a specific deal → `/deal-status "Company"`
 
 ---
 
