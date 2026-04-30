@@ -7,8 +7,12 @@
 # What it does:
 #   1. Checks Claude Code is installed
 #   2. Clones the skills repo to ~/.claude/skills/pop/
-#   3. Sets up the shared customer folder
-#   4. Verifies everything works
+#   3. Verifies everything works
+#
+# Note: Customer memory lives in Slack channels (#internal-{slug}-pop), not
+# a local folder. The Slack MCP must be authenticated separately in Claude
+# Code. Local fallback folder ~/customer-intelligence/ is created lazily
+# only if Slack MCP is unavailable at skill-run time.
 
 set -euo pipefail
 
@@ -29,8 +33,7 @@ err()  { echo -e "${RED}✗${NC} $*"; }
 
 REPO_URL="${POP_SKILLS_REPO:-https://github.com/ConsultaddHQ/pop-sales-skills.git}"
 SKILLS_DIR="$HOME/.claude/skills/pop"
-SHARED_FOLDER_PRIMARY="$HOME/Google Drive/Customer Intelligence"
-SHARED_FOLDER_FALLBACK="$HOME/customer-intelligence"
+LOCAL_FALLBACK_DIR="$HOME/customer-intelligence"
 
 # ---- Banner -----------------------------------------------------------------
 
@@ -107,25 +110,20 @@ else
   fi
 fi
 
-# ---- Step 4: Set up the shared customer folder ------------------------------
+# ---- Step 4: Confirm Slack MCP guidance -------------------------------------
 
-info "Step 4/4: Setting up your customer intelligence folder..."
+info "Step 4/4: Slack integration check..."
 
-if [[ -d "$HOME/Google Drive" ]]; then
-  mkdir -p "$SHARED_FOLDER_PRIMARY"
-  ok "Customer folder ready: $SHARED_FOLDER_PRIMARY"
-  echo "       (synced via Google Drive — your team sees what you write)"
-else
-  mkdir -p "$SHARED_FOLDER_FALLBACK"
-  warn "Google Drive for Desktop is not installed."
-  warn "Customer folder created locally at: $SHARED_FOLDER_FALLBACK"
-  echo ""
-  echo "  Your customer profiles will save locally but WON'T sync with the team."
-  echo "  To enable team sync, install Google Drive for Desktop:"
-  echo "    https://www.google.com/drive/download/"
-  echo ""
-  echo "  After installing, re-run this script."
-fi
+mkdir -p "$LOCAL_FALLBACK_DIR"
+ok "Local fallback folder ready: $LOCAL_FALLBACK_DIR"
+echo "       (used only when Slack MCP is unavailable)"
+echo ""
+echo "  Customer memory lives in Slack channels matching #internal-{slug}-pop"
+echo "  (created automatically by the CA AI Salesforce bot)."
+echo ""
+echo "  IMPORTANT: After this install, you must authenticate the Slack MCP"
+echo "  inside Claude Code so the skills can read/write Slack canvases."
+echo "  This happens once per machine, in Claude Code's MCP settings."
 
 # ---- Final verification -----------------------------------------------------
 

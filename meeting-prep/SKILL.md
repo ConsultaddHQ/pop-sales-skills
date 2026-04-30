@@ -7,7 +7,7 @@ description: |
 
   Designed for AEs walking into back-to-back meetings. Output is optimized for a 2-3 minute read with the must-reads (TL;DR, Open Commitments, The Move) at the top. Deep history is below for those who want it.
 
-  Reads from the same shared customer profile folder as /customer-discovery and /meeting-debrief. Each prospect's `customer-profile.md` is the source of truth for deal state.
+  Reads from the prospect's Slack channel (`#internal-{slug}-pop`) — both the channel's main "Customer Profile" canvas and prior standalone canvases (discovery briefs, prior meeting preps, debriefs). Falls back to local files at `~/customer-intelligence/{slug}/` if Slack is unavailable. See SLACK_INTEGRATION.md for full conventions.
 ---
 
 ## Quick Start
@@ -33,26 +33,28 @@ If you're not sure, just run it. The skill will tell you "this looks like net-ne
 
 ## Workflow
 
-### Step 1: Find the customer profile
+### Step 1: Find the customer's Slack channel
 
 Priority order:
-1. If a slug or full path provided → read directly
-2. If a name/company provided → fuzzy-search `~/Google Drive/Customer Intelligence/` for matching folder
-3. If `--calendar` flag → check the user's next 3 calendar events, match against existing profiles
-4. If no match → tell the user "no prior history for {Name}. Run /customer-discovery for net-new prospects."
+1. If a slug provided → search `#internal-{slug}-pop` directly
+2. If a name/company provided → slug it per SLACK_INTEGRATION.md rules → search the channel
+3. If `--calendar` flag → check the user's next 3 calendar events, derive slug from each, match against existing channels
+4. If channel found → read the main canvas (Customer Profile) + recent canvases (Discovery, prior preps, prior debriefs)
+5. If channel NOT found → tell the user "No channel found for {Name}. Either run /customer-discovery first (which expects the Salesforce bot to have created the channel), or pass `--no-slack` to use local fallback files."
 
-If multiple matches, ask the user to pick.
+If multiple channels match, ask the user to pick.
 
 ### Step 2: Read the full deal history
 
-Once the profile is identified:
+Once the channel is identified:
 
-1. Read the entire `customer-profile.md`
-2. List all `discovery-*.md` and `meeting-prep-*.md` and `meeting-notes-*.md` files in the folder, chronologically
-3. Pull recent Granola transcripts via `mcp__granola__list_meetings` filtering by company name (last 90 days)
-4. For each transcript, read it via `mcp__granola__get_meeting_transcript`
+1. Read the **channel's main canvas** (Customer Profile) via `mcp__claude_ai_Slack__slack_read_canvas`
+2. List all standalone canvases in the channel (Discovery Brief, Meeting Prep — {dates}, Meeting Debrief — {dates}) and read each one
+3. Read recent channel messages via `mcp__claude_ai_Slack__slack_read_channel` to catch human-side updates and the Salesforce bot's stage changes
+4. Pull recent Granola transcripts via `mcp__granola__list_meetings` filtering by company name (last 90 days)
+5. For each transcript, read it via `mcp__granola__get_meeting_transcript`
 
-The goal: full chronological picture of every interaction.
+The goal: full chronological picture of every interaction across Salesforce stage history, Slack discussion, prior AI canvases, and Granola call transcripts.
 
 ### Step 3: Reconstruct the deal timeline
 
@@ -130,10 +132,15 @@ See output template below. Optimize for the AE who has 2-3 minutes between back-
 
 ### Step 10: Save and surface
 
-Write the brief to:
-`~/Google Drive/Customer Intelligence/{company-slug}/meeting-prep-{YYYYMMDD-HHMM}.md`
+Write the prep brief to THREE locations:
 
-Show it on stdout in the chat. Highlight the ⚠ open commitments at the top.
+1. **stdout** — shown to the user as formatted markdown
+2. **Standalone canvas in the customer's Slack channel** named `Meeting Prep — {YYYY-MM-DD}`
+3. **Inline message in the channel** with link to canvas + 2-line summary highlighting overdue commitments and the move for this meeting. Tag the AE who's taking the call.
+
+Do NOT modify the Customer Profile canvas — prep is a forward-looking artifact, not a record of what happened. The Customer Profile gets updated by `/meeting-debrief` AFTER the call.
+
+**Fallback:** if Slack MCP is unavailable, write to `~/customer-intelligence/{slug}/meeting-prep-{YYYYMMDD-HHMM}.md` and warn the user.
 
 ## Output Template
 

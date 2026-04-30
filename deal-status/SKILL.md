@@ -7,7 +7,7 @@ description: |
 
   The skill is the AE's morning ritual and end-of-day check. Designed to surface what needs attention RIGHT NOW — overdue commitments, stalled deals, hiring-inflection windows about to pass, prospects with meetings in the next 7 days. Quiet about deals that are healthy.
 
-  Read-only — never modifies customer profiles. Output is a digest the AE acts on; updates happen via /meeting-debrief, not here.
+  Read-only — never modifies customer profiles. Reads from Slack channels (`#internal-*-pop` pattern) — both the channel canvases and recent messages. Output is a digest the AE acts on; updates happen via /meeting-debrief, not here. See SLACK_INTEGRATION.md for full conventions.
 ---
 
 ## Quick Start
@@ -47,18 +47,18 @@ Shows full state of one prospect. Like a /meeting-prep brief but without the "wh
 - If no args → pipeline digest, attention-needed only
 - If a flag (--all, --stalled, --upcoming, --overdue) → filtered pipeline digest
 
-### Step 2: Walk customer profiles
+### Step 2: Walk customer Slack channels
 
-```
-~/Google Drive/Customer Intelligence/
-└── {company-slug}/
-    ├── customer-profile.md          ← read this
-    ├── discovery-{ts}.md            ← scan
-    ├── meeting-prep-{ts}.md         ← scan
-    └── meeting-notes-{ts}.md        ← scan
-```
+Search Slack for channels matching `internal-*-pop` via `mcp__claude_ai_Slack__slack_search_channels`. Each match is one customer.
 
-For each prospect, extract:
+For each channel:
+
+1. Read the channel's main canvas (Customer Profile) via `mcp__claude_ai_Slack__slack_read_canvas`
+2. List standalone canvases (Discovery, Prep, Debrief) — read latest only for the digest
+3. Read recent channel messages (last 7 days) for inline activity signals + Salesforce bot stage updates
+4. From the bot's pinned channel intro: extract Salesforce stage, owner, opportunity link
+
+Extract per prospect:
 
 1. **Current stage** — from the latest entry's "Outcome" line. Map: 🟢 Advanced / 🟡 Held / 🟠 Stalled / 🔴 Soft no / ⚫ Lost. Default to "Discovery" if not set.
 2. **Last activity date** — newest timestamp across all files in the folder.
@@ -87,7 +87,7 @@ For pipeline digest, write a tight table at the top, organized by category. Quie
 
 For single-prospect, write the full state-of-deal report.
 
-Save the digest to `~/.claude/skills/pop/deal-status-cache/digest-{YYYYMMDD-HHMM}.md` so the user has a paper trail of pipeline state over time. Useful for retros.
+Save the digest to `~/.claude/skills/pop/deal-status-cache/digest-{YYYYMMDD-HHMM}.md` for a paper trail of pipeline state over time (useful for retros). Optionally post the digest as a daily message in `#pop-pipeline` (or wherever the team's central pipeline channel lives) — controlled by the `--post-to-slack` flag.
 
 ## Output Templates
 

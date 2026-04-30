@@ -7,7 +7,7 @@ description: |
 
   This is a GENERAL skill that works for any B2B prospect, any industry, any ICP. It auto-detects the prospect profile (solo operator, B2B buyer, technical founder, enterprise, etc.) and shapes the output accordingly. Specific playbooks for recurring industries should be added as reference cases over time.
 
-  Output: structured markdown brief written to stdout AND to the shared Google Drive folder at ~/Google Drive/Customer Intelligence/{company-slug}/discovery-{timestamp}.md. If Google Drive isn't mounted, falls back to ~/customer-intelligence/{company-slug}/.
+  Output: structured markdown brief written to stdout AND to the prospect's Slack channel as a canvas. Slack channels follow the pattern `#internal-{slug}-pop` and are auto-created by the CA AI Salesforce bot when an opportunity is created. The skill writes a "Discovery Brief — {date}" canvas, updates the channel's main "Customer Profile" canvas, and posts an inline summary message. See SLACK_INTEGRATION.md for full conventions.
 ---
 
 ## Quick Start
@@ -188,21 +188,35 @@ Explicitly list 3-8 things you couldn't determine from public sources. These MUS
 - Prior vendor experience
 - Timeline pressure (why now, not next quarter)
 
-### Step 12: Write output
+### Step 12: Write output to Slack
 
-Write the discovery brief to TWO locations:
+Write the discovery brief to THREE locations:
 
 1. **stdout** — shown to the user as formatted markdown
-2. **Shared folder** — `~/Google Drive/Customer Intelligence/{company-slug}/discovery-{YYYYMMDD-HHMM}.md`
+2. **Standalone canvas in the customer's Slack channel** named `Discovery Brief — {YYYY-MM-DD}`
+3. **Channel's main "Customer Profile" canvas** — append a new entry to the Activity Log section, update Hidden Differentiator / Vulnerability Signals / Open Commitments sections with new info
 
-**Slug rules:** lowercase, spaces and special chars → hyphens, collapse multiple hyphens, trim trailing hyphens.
-- "Fitness Together - Boise" → `fitness-together-boise`
-- "Vacancy Rewards" → `vacancy-rewards`
-- "Mister Mac (Wimberley)" → `mister-mac-wimberley`
+**Find the channel:**
 
-**Customer profile:** if `customer-profile.md` doesn't exist in the folder, create it from the template in `references/customer-profile-template.md`. Always append a timestamped section to the Activity Log.
+1. Slug the company name per the rules in `SLACK_INTEGRATION.md`
+2. Search Slack for the channel: `#internal-{slug}-pop` (use `mcp__claude_ai_Slack__slack_search_channels`)
+3. If found: read existing canvases, write new ones in the channel
+4. If NOT found: tell the user "No channel found for {company}. Create the Salesforce opportunity first (the CA AI Salesforce bot auto-creates the channel), or pass `--no-slack` to write locally."
 
-**Fallback:** if Google Drive isn't mounted at `~/Google Drive/`, write to `~/customer-intelligence/{company-slug}/` and warn the user once.
+**Read the bot's pinned channel introduction** to extract the canonical Salesforce-side data:
+- Company name (use this verbatim, not user input which may be malformed)
+- Current Salesforce stage
+- Owner email
+- Salesforce opportunity link
+
+Reference these in the Customer Profile canvas header.
+
+**Inline summary message:** after creating the canvas, post a short message in the channel with a link to the canvas and a 2-line summary (profile classification, qualification score, recommended entry). Tag the owner if action is needed before the call.
+
+**Fallback (Slack MCP unavailable or channel doesn't exist):**
+
+Write to `~/customer-intelligence/{company-slug}/discovery-{YYYYMMDD-HHMM}.md` and warn:
+"Slack unavailable, wrote local file. Sync to channel `#internal-{slug}-pop` when reconnected."
 
 ## Output Template
 

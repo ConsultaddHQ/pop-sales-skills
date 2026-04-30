@@ -117,11 +117,15 @@ For example:
 /customer-discovery "Sarah Chen" "Acme Logistics" "Austin Texas"
 ```
 
-3. Wait 1-2 minutes. The brief will appear in the chat AND save to:
+3. Wait 1-2 minutes. The brief will appear in the chat AND save to the prospect's Slack channel:
 
 ```
-~/Google Drive/Customer Intelligence/acme-logistics/discovery-{timestamp}.md
+#internal-acme-logistics-pop      ← canvas: "Discovery Brief — {date}"
+                                   + updates the channel's main "Customer Profile" canvas
+                                   + posts an inline summary message
 ```
+
+The channel must already exist (auto-created by the CA AI Salesforce bot when an opportunity is created in Salesforce). If it doesn't exist, the skill will tell you to create the Salesforce opportunity first, or pass `--no-slack` to write locally.
 
 4. Read the brief. Pay attention to these sections:
    - **TL;DR** — read this first. If a 30-second read doesn't give you the hook, the brief failed.
@@ -180,7 +184,10 @@ Solution: The install script needs to write to `~/.claude/`. Make sure you're no
 Solution: Skills get sharper with feedback. Paste the bad output into Slack #pop-skills with what you expected instead. Someone will tune the skill.
 
 **Problem: Where do my customer profiles save?**
-Solution: `~/Google Drive/Customer Intelligence/{company-slug}/customer-profile.md`. If you don't have Google Drive for Desktop installed, they save to `~/customer-intelligence/{company-slug}/` and the install script will warn you.
+Solution: They live in the prospect's Slack channel, named `#internal-{slug}-pop` (e.g., `#internal-thunderbird-solar-supply-llc-pop`). The channel canvas is the Customer Profile. Each `/customer-discovery` and `/meeting-debrief` run posts a separate dated canvas plus updates the main profile. If the Slack MCP is unavailable, profiles fall back to `~/customer-intelligence/{slug}/` locally.
+
+**Problem: The skill says "no channel found".**
+Solution: Channels are auto-created by the CA AI Salesforce bot when an opportunity is created in Salesforce. If you're researching a prospect before Salesforce, either create the SF opportunity first (recommended — keeps the workflow clean), or run the skill with `--no-slack` to write locally and sync later.
 
 **Problem: I'm scared of the terminal.**
 Solution: That's fine. The terminal is a tool, not a test. You only use it for the install command (one time) and to launch Claude Code (`claude`). After that, everything happens in the Claude chat interface like a normal app. You got this.

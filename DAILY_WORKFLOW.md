@@ -29,7 +29,7 @@ This shows you what needs attention TODAY across the whole pipeline. Overdue com
 
 4. Skim the TL;DR of each brief. Don't read the whole thing yet — that's for right before the call.
 5. Flag any prospect with qualification score ≤2/5 to your AE. They might want to disqualify and move on.
-6. Send the brief Drive links to your AE in Slack: `[Acme Brief](drive-link) — qual 4/5, hiring inflection signal`
+6. The briefs save automatically to each prospect's Slack channel (`#internal-{slug}-pop`) — your AE sees them inline. No need to share links manually.
 
 **Time investment:** 3-5 min per prospect × 5 prospects = 15-25 min total. Saves you 30-60 min per call later.
 

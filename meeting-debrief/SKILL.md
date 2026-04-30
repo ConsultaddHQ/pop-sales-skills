@@ -5,9 +5,9 @@ description: |
 
   ALWAYS use this skill when: the user pastes a meeting transcript, references a just-finished call, asks for a debrief, mentions a follow-up email, or says things like "write me a follow-up", "recap that call", "update the customer profile", "what did we learn", "draft the follow-up email".
 
-  Works against the same shared Google Drive customer profile folder that /customer-discovery writes to. This is how customer memory compounds across an entire team — 30 SDRs + 2 AEs all adding to the same profile per prospect over time.
+  Writes back to the prospect's Slack channel (`#internal-{slug}-pop`). Updates the channel's main "Customer Profile" canvas with what was learned, creates a standalone "Meeting Debrief — {date}" canvas, and posts an inline message with the follow-up email draft so the AE can copy/paste to Gmail. This is how customer memory compounds across the team — 30 SDRs + 2 AEs all writing to the same channel canvases over time. See SLACK_INTEGRATION.md for full conventions.
 
-  Output: (1) updated customer-profile.md with a timestamped Activity Log entry, (2) draft follow-up email in markdown ready to paste into Gmail, (3) one-paragraph executive summary of what changed in the deal.
+  Output: (1) updated Customer Profile canvas with a new Activity Log entry, (2) standalone Meeting Debrief canvas, (3) draft follow-up email in markdown posted to the channel, (4) one-paragraph executive summary on stdout.
 ---
 
 ## Quick Start
@@ -31,19 +31,18 @@ Priority order:
 
 If the meeting can't be found, ask the user to paste the transcript. Never invent details.
 
-### Step 2: Identify the prospect
+### Step 2: Identify the prospect and find the channel
 
 From the transcript, identify:
 - **Company name** (look for the prospect company, not Bharat's company "Pop")
 - **Primary contact name**
 - **Other attendees on either side**
 
-Slug the company name using the same rules as `/customer-discovery` (lowercase, hyphens for spaces, etc.).
+Slug the company name per SLACK_INTEGRATION.md rules. Search Slack for `#internal-{slug}-pop` via `mcp__claude_ai_Slack__slack_search_channels`.
 
-Check if `~/Google Drive/Customer Intelligence/{company-slug}/customer-profile.md` exists.
-
-- **If profile exists:** read it. You'll extend it.
-- **If profile does NOT exist:** create one from the template at `~/.claude/skills/company/customer-discovery/references/customer-profile-template.md`. This means a meeting happened but discovery was skipped — flag this to the user: "No prior /customer-discovery run found for {company}. Creating profile from scratch now. Consider running /customer-discovery before future meetings to pre-load context."
+- **If channel exists:** read the main Customer Profile canvas. You'll extend it. Read prior canvases (Discovery Brief, prior preps) for context.
+- **If channel does NOT exist:** flag to the user: "No Slack channel for {company}. Either the Salesforce opportunity wasn't created (CA AI Salesforce bot creates channels automatically), or this prospect is outside our normal flow. Pass `--no-slack` to write locally, or create the SF opportunity first."
+- **If channel exists but Customer Profile canvas is empty/missing:** create a fresh Customer Profile canvas from the template structure in SLACK_INTEGRATION.md, flag to user: "No prior discovery run for {company}. Creating Customer Profile now. Run /customer-discovery before future meetings to pre-load context."
 
 ### Step 3: Extract from the transcript (10 fields)
 
@@ -97,9 +96,11 @@ If the prospect mentioned hiring a team that will influence the decision (see `r
 
 Re-score the prospect against the 5 qualification signals from /customer-discovery. If the score changed (up or down) from pre-call, note why. A score drop is a signal to de-prioritize; a rise means accelerate.
 
-### Step 6: Write updates to the customer profile
+### Step 6: Write updates to Slack
 
-Append a new Activity Log section to `customer-profile.md`. Never overwrite prior sections. Format:
+Three writes:
+
+**A. Update the channel's main Customer Profile canvas** via `mcp__claude_ai_Slack__slack_update_canvas`. Append a new Activity Log section. Never overwrite prior sections. Format:
 
 ```markdown
 ### {YYYY-MM-DD HH:MM} -- {Meeting type} with {attendees} by {your name}
@@ -132,13 +133,20 @@ Append a new Activity Log section to `customer-profile.md`. Never overwrite prio
 - {new objection pattern if applicable}
 ```
 
-Also update these sections in the profile (if the call revealed new info):
+Also update these sections in the Customer Profile canvas (if the call revealed new info):
 - **Company Overview** — any new facts about the business
 - **Leadership & Decision Makers** — new people identified, decision power confirmed
 - **Business Priorities & Challenges** — confirmed pains move from "likely" to "confirmed" (tag with `[CONFIRMED on DATE]`)
 - **Our Relationship** — update deal stage, budget signals, timeline
 - **Hidden Differentiator** — if the call revealed or refuted the predicted differentiator
 - **Vulnerability Signals** — new signals learned, or old ones confirmed
+- **Open Commitments** — add new commitments from this call, mark prior commitments as DELIVERED if applicable
+
+**B. Create a standalone Meeting Debrief canvas** via `mcp__claude_ai_Slack__slack_create_canvas` named `Meeting Debrief — {YYYY-MM-DD}`. Contents: full debrief output (the markdown template below).
+
+**C. Post an inline message in the channel** with the follow-up email draft formatted for copy-paste, plus a 2-line summary of the deal stage change. Tag the AE / owner.
+
+**Fallback:** if Slack MCP is unavailable, write locally to `~/customer-intelligence/{slug}/meeting-debrief-{ts}.md` and warn the user.
 
 ### Step 7: Draft the follow-up email
 
